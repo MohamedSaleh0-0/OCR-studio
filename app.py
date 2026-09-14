@@ -20,7 +20,7 @@ from storage import JsonStore, new_id, now_iso
 
 ROOT = Path(__file__).resolve().parent
 UI_DIR = ROOT / "ui"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.2.0"
 
 
 class Api:
