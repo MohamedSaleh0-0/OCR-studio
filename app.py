@@ -20,6 +20,7 @@ from storage import JsonStore, new_id, now_iso
 
 ROOT = Path(__file__).resolve().parent
 UI_DIR = ROOT / "ui"
+APP_VERSION = "0.1.0"
 
 
 class Api:
@@ -49,6 +50,7 @@ class Api:
                 history.append(item)
         return {
             "settings": settings,
+            "version": APP_VERSION,
             "credentials": [self._credential_view(item, usage) for item in self.store.credentials()],
             "runs": history,
             "platform": platform.system(),
@@ -246,7 +248,7 @@ def main() -> None:
     runs = RunManager(store)
     api = Api(store, runs)
     window = webview.create_window(
-        "Batch OCR Studio",
+        f"Batch OCR Studio v{APP_VERSION}",
         str(UI_DIR / "index.html"),
         js_api=api,
         width=1280,

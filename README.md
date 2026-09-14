@@ -4,6 +4,8 @@ A lightweight, local Windows desktop GUI for converting PDF files into
 Markdown with Mistral OCR. It supports English/Arabic UI, pasted paths,
 resumable runs, multiple API keys, and secure local credential storage.
 
+Current release line: `v0.1.0`.
+
 The repository contains no API keys. Runtime data is stored in the ignored
 `data/` directory, while API secrets are stored through Windows Credential
 Manager. See `keys.json.example` only for the import format.
