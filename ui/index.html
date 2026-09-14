@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Batch OCR Studio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail">
+      <div class="wordmark"><span>OCR</span><div><b>Batch</b><small>Studio</small></div></div>
+      <nav>
+        <button class="nav-item active" data-page="new" data-i18n="newOcr">New OCR</button>
+        <button class="nav-item" data-page="history" data-i18n="history">History</button>
+        <button class="nav-item" data-page="settings" data-i18n="settings">Settings</button>
+      </nav>
+      <div class="rail-note" data-i18n="localNote">Runs locally on this computer.</div>
+    </aside>
+
+    <main>
+      <header class="page-header"><div><div class="eyebrow" data-i18n="workspace">WORKSPACE</div><h1 id="pageTitle">New OCR</h1><p id="pageSubtitle" data-i18n="newOcrSubtitle">Convert PDF files into Markdown.</p></div></header>
+
+      <section id="page-new" class="page active">
+        <div class="intro"><div class="intro-number">01</div><div><h2 data-i18n="sourceTitle">Choose your PDF sources</h2><p data-i18n="sourceHint">Paste one file or folder path per line, or use the buttons below.</p></div></div>
+        <div class="work-grid">
+          <div class="panel source-panel">
+            <div class="panel-label" data-i18n="sources">PDF FILES OR FOLDERS</div>
+            <textarea id="inputPaths" placeholder="C:\\Documents\\Books\nD:\\Scans"></textarea>
+            <div class="button-row"><button class="button quiet" id="browseFiles" data-i18n="chooseFiles">Choose files</button><button class="button quiet" id="browseFolder" data-i18n="chooseFolder">Choose folder</button></div>
+            <div id="pathValidation" class="message"></div>
+          </div>
+          <div class="panel output-panel">
+            <div class="panel-label" data-i18n="destination">DESTINATION</div>
+            <label class="field"><span data-i18n="outputFolder">Output folder</span><div class="input-action"><input id="outputDir" type="text" /><button class="button quiet" id="browseOutput" data-i18n="browse">Browse</button></div></label>
+            <label class="check"><input id="forceExisting" type="checkbox" /><span data-i18n="reprocess">Reprocess existing Markdown</span></label>
+            <p class="all-keys" data-i18n="allKeys">All enabled API keys will be used automatically.</p>
+            <button class="button primary wide" id="scanAndStart" data-i18n="scanAndStart">Scan and start OCR</button>
+          </div>
+        </div>
+        <div id="monitorPanel" class="panel monitor hidden"><div class="monitor-head"><div><div class="panel-label" data-i18n="currentRun">CURRENT RUN</div><h2 id="runTitle">—</h2></div><div class="button-row"><button class="button quiet" id="pauseRun" data-i18n="pause">Pause</button><button class="button danger" id="cancelRun" data-i18n="cancel">Cancel</button></div></div><div id="runSummary" class="run-summary"></div><div id="documentList" class="document-list"></div></div>
+      </section>
+
+      <section id="page-history" class="page"><div class="history-top"><div><div class="eyebrow" data-i18n="archive">ARCHIVE</div><h2 data-i18n="historyTitle">Processing history</h2><p data-i18n="historySubtitle">Review completed and interrupted OCR operations.</p></div><div class="history-stats"><span><b id="statRuns">0</b><small data-i18n="runs">Runs</small></span><span><b id="statFiles">0</b><small data-i18n="files">Files</small></span><span><b id="statPages">0</b><small data-i18n="pages">Pages</small></span></div></div><div id="historyList" class="history-list"></div></section>
+
+      <section id="page-settings" class="page"><div class="settings-layout"><div class="settings-nav"><button class="settings-tab active" data-settings-tab="general" data-i18n="general">General</button><button class="settings-tab" data-settings-tab="keys" data-i18n="apiKeys">API keys</button></div><div class="settings-content"><div id="settings-general" class="settings-section active"><div class="eyebrow" data-i18n="preferences">PREFERENCES</div><h2 data-i18n="generalSettings">General settings</h2><label class="field"><span data-i18n="language">Language</span><select id="settingsLanguage"><option value="en">English</option><option value="ar">العربية</option></select></label><label class="field"><span data-i18n="defaultOutput">Default output folder</span><div class="input-action"><input id="settingsOutput" type="text" /><button class="button quiet" id="browseSettingsOutput" data-i18n="browse">Browse</button></div></label><button class="button primary" id="saveSettings" data-i18n="save">Save settings</button></div><div id="settings-keys" class="settings-section"><div class="section-head"><div><div class="eyebrow" data-i18n="credentials">CREDENTIALS</div><h2 data-i18n="apiKeys">API keys</h2><p data-i18n="keysHint">Name each key and record when its credits or subscription renews.</p></div><div class="button-row"><button class="button quiet" id="importCredentials" data-i18n="import">Import</button><button class="button primary" id="addCredential" data-i18n="addKey">Add API key</button></div></div><div id="credentialList" class="credential-list"></div></div></div></div></section>
+    </main>
+  </div>
+
+  <div id="credentialModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="credentialDialogTitle">Add API key</h2><button id="closeCredential" class="close">×</button></div><form id="credentialForm"><label class="field"><span data-i18n="provider">Provider</span><input id="credentialProvider" value="mistral" /></label><label class="field"><span data-i18n="name">Name</span><input id="credentialName" required /></label><label class="field"><span data-i18n="email">Account email</span><input id="credentialEmail" type="email" /></label><label class="field"><span data-i18n="apiKey">API key</span><input id="credentialSecret" type="password" autocomplete="off" /></label><label class="field"><span data-i18n="renewalDate">Credits/subscription renewal date</span><input id="credentialRenewal" type="date" /></label><label class="check"><input id="credentialEnabled" type="checkbox" checked /><span data-i18n="enabled">Enabled</span></label><div class="modal-actions"><button type="button" id="cancelCredential" class="button quiet" data-i18n="cancel">Cancel</button><button type="submit" class="button primary" data-i18n="save">Save</button></div></form></div></div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

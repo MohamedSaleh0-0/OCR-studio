@@ -1,0 +1,7 @@
+[
+  {
+    "name": "Main account",
+    "email": "account@example.com",
+    "key": "paste-your-mistral-api-key-here"
+  }
+]

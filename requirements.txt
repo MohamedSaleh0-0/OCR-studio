@@ -1,0 +1,4 @@
+pywebview==6.2.1
+keyring==25.7.0
+mistralai==2.10.0
+pypdf==6.18.1
