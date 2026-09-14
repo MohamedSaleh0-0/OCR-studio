@@ -90,9 +90,9 @@ class Api:
         )
         return list(result or [])
 
-    def validate_paths(self, text: str, output_dir: str = "") -> dict:
+    def validate_paths(self, text: str, output_dir: str = "", same_folder: bool = False) -> dict:
         paths = parse_path_lines(text)
-        output = clean_path(output_dir) if output_dir.strip() else Path(self.store.settings()["default_output"]).resolve()
+        output = None if same_folder else (clean_path(output_dir) if output_dir.strip() else Path(self.store.settings()["default_output"]).resolve())
         pairs, warnings = discover_pdfs(paths, output)
         return {
             "paths": [str(path) for path in paths],
@@ -101,11 +101,11 @@ class Api:
             "files": [{"source": str(pdf), "root": str(root)} for root, pdf in pairs[:500]],
         }
 
-    def create_run(self, text: str, output_dir: str, force_existing: bool) -> dict:
+    def create_run(self, text: str, output_dir: str, same_folder: bool, force_existing: bool) -> dict:
         paths = parse_path_lines(text)
         if not paths:
             raise ValueError("Add at least one PDF file or folder")
-        output = clean_path(output_dir) if output_dir.strip() else Path(self.store.settings()["default_output"]).resolve()
+        output = None if same_folder else (clean_path(output_dir) if output_dir.strip() else Path(self.store.settings()["default_output"]).resolve())
         enabled_keys = sum(1 for item in self.store.credentials() if item.get("enabled", True))
         run = self.runs.create_run(paths, output, bool(force_existing), max(1, enabled_keys))
         return run

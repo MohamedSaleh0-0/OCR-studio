@@ -59,11 +59,11 @@ def parse_path_lines(text: str) -> list[Path]:
     return result
 
 
-def discover_pdfs(input_paths: list[Path], output_dir: Path) -> tuple[list[tuple[Path, Path]], list[str]]:
+def discover_pdfs(input_paths: list[Path], output_dir: Path | None) -> tuple[list[tuple[Path, Path]], list[str]]:
     found: list[tuple[Path, Path]] = []
     warnings: list[str] = []
     seen: set[str] = set()
-    output_dir = output_dir.resolve()
+    output_dir = output_dir.resolve() if output_dir else None
 
     for path in input_paths:
         path = Path(path).expanduser().resolve()
@@ -80,7 +80,7 @@ def discover_pdfs(input_paths: list[Path], output_dir: Path) -> tuple[list[tuple
                 if resolved == path and path.is_file():
                     warnings.append(f"Not a PDF: {path}")
                 continue
-            if resolved == output_dir or output_dir in resolved.parents:
+            if output_dir and (resolved == output_dir or output_dir in resolved.parents):
                 continue
             key = str(resolved).casefold()
             if key not in seen:
@@ -89,7 +89,9 @@ def discover_pdfs(input_paths: list[Path], output_dir: Path) -> tuple[list[tuple
     return found, warnings
 
 
-def output_path_for(root: Path, pdf_path: Path, output_dir: Path) -> Path:
+def output_path_for(root: Path, pdf_path: Path, output_dir: Path | None) -> Path:
+    if output_dir is None:
+        return pdf_path.with_suffix(".md")
     relative = pdf_path.relative_to(root)
     return output_dir / root.name / relative.with_suffix(".md")
 
@@ -325,7 +327,7 @@ class RunManager:
                         document["status"] = "pending"
                 self.store.save_documents(run["id"], documents)
 
-    def create_run(self, input_paths: list[Path], output_dir: Path, force_existing: bool, workers: int) -> dict:
+    def create_run(self, input_paths: list[Path], output_dir: Path | None, force_existing: bool, workers: int) -> dict:
         pairs, warnings = discover_pdfs(input_paths, output_dir)
         if not pairs:
             raise ValueError("No PDF files were found")
@@ -343,7 +345,8 @@ class RunManager:
         run = {
             "id": run_id, "status": "created", "created_at": now_iso(), "started_at": None,
             "finished_at": None, "input_paths": [str(path) for path in input_paths],
-            "output_dir": str(output_dir), "force_existing": force_existing,
+            "output_dir": str(output_dir) if output_dir else "", "output_mode": "central" if output_dir else "same_folder",
+            "force_existing": force_existing,
             "workers": max(1, int(workers)), "total": len(documents),
             "message": "Ready", "warnings": warnings,
         }

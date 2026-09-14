@@ -38,6 +38,10 @@ Windows account.
 WebView2 is required by the desktop shell; it is already present on most
 modern Windows installations.
 
+Existing Markdown outputs are skipped automatically on later runs unless
+reprocessing is selected. The output can either be mirrored into one central
+folder or saved beside each source PDF.
+
 ## GitHub releases
 
 Push a version tag to build and publish the executable automatically:
