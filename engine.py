@@ -93,7 +93,10 @@ def output_path_for(root: Path, pdf_path: Path, output_dir: Path | None) -> Path
     if output_dir is None:
         return pdf_path.with_suffix(".md")
     relative = pdf_path.relative_to(root)
-    return output_dir / root.name / relative.with_suffix(".md")
+    # Central output mode writes Markdown files directly under the selected
+    # output folder. Keep the PDF's relative subfolders, but don't create an
+    # extra folder named after the input root.
+    return output_dir / relative.with_suffix(".md")
 
 
 def current_month() -> str:
