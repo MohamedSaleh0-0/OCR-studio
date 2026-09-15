@@ -145,9 +145,9 @@ class Api:
             if not existing.exists():
                 raise ValueError("Output file and its parent folder do not exist")
             if target.exists() and target.is_file():
-                subprocess.Popen(["explorer.exe", f"/select,{target}"])
+                subprocess.Popen(["explorer.exe", "/select,", str(target)])
             else:
-                subprocess.Popen(["explorer.exe", str(existing)])
+                os.startfile(str(existing))  # type: ignore[attr-defined]
         elif sys.platform == "darwin":
             subprocess.Popen(["open", "-R", str(target if target.exists() else target.parent)])
         else:
