@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import platform
+import subprocess
 import sys
 from pathlib import Path
 
@@ -135,6 +136,22 @@ class Api:
             os.system(f'open "{target}"')
         else:
             os.system(f'xdg-open "{target}"')
+        return True
+
+    def reveal_path(self, path: str) -> bool:
+        target = clean_path(path)
+        if os.name == "nt":
+            existing = target if target.exists() else target.parent
+            if not existing.exists():
+                raise ValueError("Output file and its parent folder do not exist")
+            if target.exists() and target.is_file():
+                subprocess.Popen(["explorer.exe", f"/select,{target}"])
+            else:
+                subprocess.Popen(["explorer.exe", str(existing)])
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", "-R", str(target if target.exists() else target.parent)])
+        else:
+            subprocess.Popen(["xdg-open", str(target.parent)])
         return True
 
     def add_credential(self, provider: str, name: str, email: str, secret: str, renewal_date: str = "") -> dict:
